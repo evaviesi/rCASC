@@ -5,7 +5,7 @@ Title: rCASC reproducible Classification Analysis of Single Cell Sequencing Data
 Authors@R: c(person("Raffaele", "Calogero", role = c("aut", "cre"),
                      email = "raffaele.calogero@unito.it"),
               person("Luca", "Alessandri", role = "aut"),
-              person("Marco", "Beccuti", role = "aut")),
+              person("Marco", "Beccuti", role = "aut"),
               person("Giovanni", "Motterle", role = "aut"))
 Author: Raffaele Calogero [aut, cre],
     Luca Alessandri [aut]
