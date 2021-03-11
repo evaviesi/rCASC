@@ -50,5 +50,4 @@ docker.io/repbioinfo/autoencoderdb
 docker.io/repbioinfo/seuratintegration
 docker.io/repbioinfo/seuratccycle
 docker.io/repbioinfo/autoencoderdb
-
-
+docker.io/giovannics/spatial2020seuratpermutation

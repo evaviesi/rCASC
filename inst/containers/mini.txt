@@ -15,4 +15,4 @@ docker.io/repbioinfo/seuratpermutation
 docker.io/repbioinfo/seuratanalysis
 docker.io/repbioinfo/seuratprior
 docker.io/repbioinfo/ribomitoumi
-
+docker.io/giovannics/spatial2020seuratpermutation
