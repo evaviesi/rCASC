@@ -1,10 +1,16 @@
 
-#' @title StLearn Permutation
+#' @title StardustSTLearnPermutation Permutation
 #' @description This function executes a ubuntu docker that produces a specific number of permutation to evaluate clustering 
-#'  using seurat (updated to 2020) and a stlearn normalized expression matrix as input.
+#'  using an extended conf. of seurat (updated to 2020) that take into consideration physical position of spots and morphological similarities
+#'  of tissue regions under each spot.
 #' @param group, a character string. Two options: sudo or docker, depending to which group the user belongs
 #' @param scratch.folder, a character string indicating the path of the scratch folder
 #' @param file, a character string indicating the path of the file, with file name and extension included
+#' @param tissuePosition, file with tissue position name with extension
+#' @param morphologicalFeatures, file with tissue morphological features in PCA space, rows are PCs and cols are spots
+#' @param spaceWeight, double in [0,1]. Weight for the linear transormation of spot distance.
+#'  1 means spot distance weight as much as profile distance, 0 means spot distance doesn't contribute at all in the overall 
+#'  distance measure.
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
 #' @param percent, percentage of randomly selected cells removed in each permutation
@@ -21,8 +27,8 @@
 #' @return To write
 #' @export
 
-STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder, 
-  file, nPerm, permAtTime, percent, separator, 
+StardustSTLearnPermutation <- function(group=c("sudo","docker"), scratch.folder, 
+  file, tissuePosition,morphologicalFeatures, spaceWeight=1, nPerm, permAtTime, percent, separator, 
   logTen=0, pcaDimensions=30, seed=1111, sparse=FALSE, format="NULL"){
 
   if(!sparse){
@@ -38,6 +44,15 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
       stop("Format output cannot be NULL for sparse matrix")
     }
   }
+
+  #check valid value for spaceWeight
+  tissuePositionFile = basename(tissuePosition)
+  morphologicalFeaturesFile = basename(morphologicalFeatures)
+  spaceWeight = as.double(spaceWeight)
+  if(is.na(spaceWeight))
+    stop("Param spaceWeight is not a double number.")
+  if(spaceWeight > 1 | spaceWeight < 0)
+    stop("spaceWeight is not in [0,1]")
 
   #running time 1
   ptm <- proc.time()
@@ -85,6 +100,8 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
 
   dir.create(paste(scrat_tmp.folder,"/",matrixName,sep=""))
   dir.create(paste(data.folder,"/Results",sep=""))
+  system(paste("cp ",tissuePosition," ",scrat_tmp.folder,"/",sep=""))
+  system(paste("cp ",morphologicalFeatures," ",scrat_tmp.folder,"/",sep=""))
   if(sparse==FALSE){
     system(paste("cp ",data.folder,"/",matrixName,".",format," ",scrat_tmp.folder,"/",sep=""))
   }else{
@@ -94,8 +111,9 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
   #executing the docker job
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
-    ":/data -d docker.io/giovannics/stlearn-rcasc Rscript /home/main.R ",
-    matrixName," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
+    ":/data -d docker.io/giovannics/stlearn_stardust_rcasc Rscript /home/main.R ",
+    matrixName," ",tissuePositionFile," ",morphologicalFeaturesFile," ",
+    spaceWeight," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
     " ",logTen," ",pcaDimensions," ",seed," ",sparse,sep="")
 
   resultRun <- runDocker(group=group, params=params)
@@ -144,4 +162,4 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
   system(paste("cp ",paste(path.package(package="rCASC"),
     "containers/containers.txt",sep="/")," ",data.folder, sep=""))
   setwd(home)
-}
+} 

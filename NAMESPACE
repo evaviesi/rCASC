@@ -3,6 +3,7 @@
 export(BCscTool)
 export(STLearnPermutation)
 export(StardustPermutation)
+export(StardustSTLearnPermutation)
 export(StartdustConfigurations)
 export(anovaLike)
 export(autoFeature)
