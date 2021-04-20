@@ -13,7 +13,7 @@ STLearnPermutation(
   percent,
   separator,
   logTen = 0,
-  pcaDimensions = 30,
+  pcaDimensions = 5,
   seed = 1111,
   sparse = FALSE,
   format = "NULL"

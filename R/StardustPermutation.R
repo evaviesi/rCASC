@@ -27,7 +27,7 @@
 
 StardustPermutation <- function(group=c("sudo","docker"), scratch.folder, 
   file, tissuePosition, spaceWeight=1, nPerm, permAtTime, percent, separator, 
-  logTen=0, pcaDimensions=30, seed=1111, sparse=FALSE, format="NULL"){
+  logTen=0, pcaDimensions=5, seed=1111, sparse=FALSE, format="NULL"){
 
   if(!sparse){
   data.folder=dirname(file)

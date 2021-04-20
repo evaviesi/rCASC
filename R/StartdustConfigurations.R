@@ -25,7 +25,7 @@
 
 StartdustConfigurations <- function(group=c("sudo","docker"), scratch.folder, 
   file, tissuePosition, nPerm, permAtTime, percent, separator, logTen=0, 
-  pcaDimensions=30, seed=1111, sparse=FALSE, format="NULL"){
+  pcaDimensions=5, seed=1111, sparse=FALSE, format="NULL"){
 
   library(ggplot2)
   if(!file.exists(file))
