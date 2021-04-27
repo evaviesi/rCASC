@@ -4,10 +4,9 @@
 #'  using spaGCN
 #' @param group, a character string. Two options: sudo or docker, depending to which group the user belongs
 #' @param scratch.folder, a character string indicating the path of the scratch folder
-#' @param inputs.folder, a character string indicating the path of the folder containing the input files
-#' @param h5matrix.name, a character string indicating the name with extension (.h5) of the expression matrix
-#' @param spotpositions.name, a character string indicating the name with extension (.csv) of the spot positions
-#' @param image.name, a character string indicating the name with extension (.tif) of the tissue image
+#' @param h5matrix.name, a character string indicating the full path + name with extension (.h5) of the expression matrix
+#' @param spotpositions.name, a character string indicating the full path + name with extension (.csv) of the spot positions
+#' @param image.name, a character string indicating the full path + name with extension (.tif) of the tissue image
 #' @param use_histology, a boolean indicating if spaGCN should use the hisological information or not
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
@@ -19,13 +18,14 @@
 #' @return To write
 #' @export
 
-spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder, inputs.folder, 
+spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
   h5matrix.name, spotpositions.name, image.name, use_histology=TRUE, nPerm=80, 
   permAtTime=8, percent=10, seed=1111){
   
-  inputs.folder = normalizePath(inputs.folder)
-  data.folder = normalizePath(dirname(inputs.folder))
-  matrixName = strsplit(h5matrix.name,".",fixed = TRUE)[[1]][1]
+  data.folder = normalizePath(dirname(h5matrix.name))
+  matrixName = strsplit(h5matrix.name,"/",fixed = TRUE)[[1]]
+  matrixName = matrixName[length(matrixName)]
+  matrixName = strsplit(matrixName,".",fixed = TRUE)[[1]][1]
 
   #running time 1
   ptm <- proc.time()
@@ -71,22 +71,21 @@ spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder, inputs.f
   dir.create(paste(scrat_tmp.folder,"/",matrixName,sep=""))
   dir.create(paste(data.folder,"/Results",sep=""))
 
-  h5matrix_path = paste(inputs.folder, "/",h5matrix.name,sep = "")
-  tissue_positions_path = paste(inputs.folder, "/",spotpositions.name,sep = "")
-  image_path = paste(inputs.folder, "/",image.name,sep = "")
+  system(paste("cp ",h5matrix.name," ",scrat_tmp.folder,"/",sep=""))
+  system(paste("cp ",spotpositions.name," ",scrat_tmp.folder,"/",sep=""))
+  system(paste("cp ",image.name," ",scrat_tmp.folder,"/",sep=""))
 
-  system(paste("cp ",h5matrix_path," ",scrat_tmp.folder,"/",sep=""))
-  system(paste("cp ",tissue_positions_path," ",scrat_tmp.folder,"/",sep=""))
-  system(paste("cp ",image_path," ",scrat_tmp.folder,"/",sep=""))
-
-  spotpositions.name = strsplit(spotpositions.name,"/",fixed = TRUE)[[1]]
-  spotpositions.name = spotpositions.name[length(spotpositions.name)]
-
+  h5matrixfile = strsplit(h5matrix.name,"/",fixed = TRUE)[[1]]
+  h5matrixfile = h5matrixfile[length(h5matrixfile)]
+  spotpositionsfile = strsplit(spotpositions.name,"/",fixed = TRUE)[[1]]
+  spotpositionsfile = spotpositionsfile[length(spotpositionsfile)]
+  imagefile = strsplit(image.name,"/",fixed = TRUE)[[1]]
+  imagefile = imagefile[length(imagefile)]
   #executing the docker job
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/spagcnpermutation Rscript /home/main.R ",
-    h5matrix.name," ",spotpositions.name," ",image.name," ",use_histology," ",nPerm," ",permAtTime,
+    h5matrixfile," ",spotpositionsfile," ",imagefile," ",use_histology," ",nPerm," ",permAtTime,
     " ",percent," ",seed," ",sep="")
 
   resultRun <- runDocker(group=group, params=params)
