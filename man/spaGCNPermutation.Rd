@@ -7,11 +7,11 @@
 spaGCNPermutation(
   group = c("sudo", "docker"),
   scratch.folder,
-  inputs.folder,
   h5matrix.name,
   spotpositions.name,
   image.name,
   use_histology = TRUE,
+  p,
   nPerm = 80,
   permAtTime = 8,
   percent = 10,
@@ -23,15 +23,15 @@ spaGCNPermutation(
 
 \item{scratch.folder, }{a character string indicating the path of the scratch folder}
 
-\item{inputs.folder, }{a character string indicating the path of the folder containing the input files}
+\item{h5matrix.name, }{a character string indicating the full path + name with extension (.h5) of the expression matrix}
 
-\item{h5matrix.name, }{a character string indicating the name with extension (.h5) of the expression matrix}
+\item{spotpositions.name, }{a character string indicating the full path + name with extension (.csv) of the spot positions}
 
-\item{spotpositions.name, }{a character string indicating the name with extension (.csv) of the spot positions}
-
-\item{image.name, }{a character string indicating the name with extension (.tif) of the tissue image}
+\item{image.name, }{a character string indicating the full path + name with extension (.tif) of the tissue image}
 
 \item{use_histology, }{a boolean indicating if spaGCN should use the hisological information or not}
+
+\item{p, }{a real number between 0 and representing the percentage of total expression contributed by neighborhoods}
 
 \item{nPerm, }{number of permutations to perform the pValue to evaluate clustering}
 

@@ -8,6 +8,7 @@
 #' @param spotpositions.name, a character string indicating the full path + name with extension (.csv) of the spot positions
 #' @param image.name, a character string indicating the full path + name with extension (.tif) of the tissue image
 #' @param use_histology, a boolean indicating if spaGCN should use the hisological information or not
+#' @param p, a real number between 0 and representing the percentage of total expression contributed by neighborhoods
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
 #' @param percent, percentage of randomly selected cells removed in each permutation
@@ -19,7 +20,7 @@
 #' @export
 
 spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
-  h5matrix.name, spotpositions.name, image.name, use_histology=TRUE, nPerm=80, 
+  h5matrix.name, spotpositions.name, image.name, use_histology=TRUE, p,nPerm=80, 
   permAtTime=8, percent=10, seed=1111){
   
   data.folder = normalizePath(dirname(h5matrix.name))
@@ -27,6 +28,10 @@ spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
   matrixName = matrixName[length(matrixName)]
   matrixName = strsplit(matrixName,".",fixed = TRUE)[[1]][1]
 
+  p = as.double(p)
+  if(p > 1 || p < 0){
+    stop("Parameter 'p' has not value between 0 and 1")
+  }
   #running time 1
   ptm <- proc.time()
   #setting the data.folder as working folder
@@ -85,7 +90,7 @@ spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/spagcnpermutation Rscript /home/main.R ",
-    h5matrixfile," ",spotpositionsfile," ",imagefile," ",use_histology," ",nPerm," ",permAtTime,
+    h5matrixfile," ",spotpositionsfile," ",imagefile," ",use_histology," ",p," ",nPerm," ",permAtTime,
     " ",percent," ",seed," ",sep="")
 
   resultRun <- runDocker(group=group, params=params)
