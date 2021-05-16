@@ -77,7 +77,7 @@ bayeSpacePermutation <- function(group=c("sudo","docker"), scratch.folder,
 
   system(paste("cp ",file," ",scrat_tmp.folder,"/",sep=""))
   system(paste("cp -r ",filtered_feature_bc_matrix," ",scrat_tmp.folder,"/",sep=""))
-  system(paste("cp ",spatial," ",scrat_tmp.folder,"/",sep=""))
+  system(paste("cp -r ",spatial," ",scrat_tmp.folder,"/",sep=""))
 
   filefile = strsplit(file,"/",fixed = TRUE)[[1]]
   filefile = filefile[length(filefile)]
