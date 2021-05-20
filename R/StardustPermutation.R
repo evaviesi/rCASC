@@ -9,6 +9,7 @@
 #' @param spaceWeight, double in [0,1]. Weight for the linear transormation of spot distance.
 #'  1 means spot distance weight as much as profile distance, 0 means spot distance doesn't contribute at all in the overall 
 #'  distance measure.
+#' @param res, double resolution for louvain algorithm
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
 #' @param percent, percentage of randomly selected cells removed in each permutation
@@ -26,7 +27,7 @@
 #' @export
 
 StardustPermutation <- function(group=c("sudo","docker"), scratch.folder, 
-  file, tissuePosition, spaceWeight=1, nPerm, permAtTime, percent, separator, 
+  file, tissuePosition, spaceWeight=1,res=0.8, nPerm, permAtTime, percent, separator, 
   logTen=0, pcaDimensions=5, seed=1111, sparse=FALSE, format="NULL"){
 
   if(!sparse){
@@ -50,7 +51,10 @@ StardustPermutation <- function(group=c("sudo","docker"), scratch.folder,
     stop("Param spaceWeight is not a double number.")
   if(spaceWeight > 1 | spaceWeight < 0)
     stop("spaceWeight is not in [0,1]")
-
+  res = as.double(res)
+  if(is.na(res) || res < 0 || res > 5){
+    stop("Param res is not valid. Values are in [0,5].")
+  }
   #running time 1
   ptm <- proc.time()
   #setting the data.folder as working folder
@@ -111,7 +115,7 @@ StardustPermutation <- function(group=c("sudo","docker"), scratch.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/spatial2020seuratpermutation Rscript /home/main.R ",
     matrixName," ",tissuePositionFile," ",profileDistance," ",spotDistance," ", 
-  spaceWeight," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
+  spaceWeight," ",res," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
     " ",logTen," ",pcaDimensions," ",seed," ",sparse,sep="")
 
   resultRun <- runDocker(group=group, params=params)
