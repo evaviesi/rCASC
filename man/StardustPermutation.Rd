@@ -10,6 +10,7 @@ StardustPermutation(
   file,
   tissuePosition,
   spaceWeight = 1,
+  res = 0.8,
   nPerm,
   permAtTime,
   percent,
@@ -33,6 +34,8 @@ StardustPermutation(
 \item{spaceWeight, }{double in [0,1]. Weight for the linear transormation of spot distance.
 1 means spot distance weight as much as profile distance, 0 means spot distance doesn't contribute at all in the overall 
 distance measure.}
+
+\item{res, }{double resolution for louvain algorithm}
 
 \item{nPerm, }{number of permutations to perform the pValue to evaluate clustering}
 
