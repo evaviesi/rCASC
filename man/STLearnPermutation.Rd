@@ -8,15 +8,13 @@ STLearnPermutation(
   group = c("sudo", "docker"),
   scratch.folder,
   file,
-  nPerm,
-  permAtTime,
-  percent,
-  separator,
-  logTen = 0,
+  filtered_feature_bc_matrix,
+  lResolution = 0.8,
+  nPerm = 80,
+  permAtTime = 8,
+  percent = 10,
   pcaDimensions = 5,
-  seed = 1111,
-  sparse = FALSE,
-  format = "NULL"
+  seed = 1111
 )
 }
 \arguments{
@@ -24,7 +22,12 @@ STLearnPermutation(
 
 \item{scratch.folder, }{a character string indicating the path of the scratch folder}
 
-\item{file, }{a character string indicating the path of the file, with file name and extension included}
+\item{file, }{a character string indicating the full path + name with extension (.txt) of the expression matrix}
+
+\item{filtered_feature_bc_matrix, }{a character string indicating the full path of the Space Ranger output directory (10X published data).
+The directory must be named 'filtered_feature_bc_matrix'}
+
+\item{lResolution, }{double for the resolution of Louvain algorithm}
 
 \item{nPerm, }{number of permutations to perform the pValue to evaluate clustering}
 
@@ -32,17 +35,9 @@ STLearnPermutation(
 
 \item{percent, }{percentage of randomly selected cells removed in each permutation}
 
-\item{separator, }{separator used in count file, e.g. '\\t', ','}
-
-\item{logTen, }{1 if the count matrix is already in log10, 0 otherwise}
-
 \item{pcaDimensions, }{0 for automatic selection of PC elbow.}
 
 \item{seed, }{important value to reproduce the same results with same input}
-
-\item{sparse, }{boolean for sparse matrix}
-
-\item{format, }{output file format csv or txt}
 }
 \value{
 To write

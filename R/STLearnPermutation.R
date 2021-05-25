@@ -4,16 +4,15 @@
 #'  using seurat (updated to 2020) and a stlearn normalized expression matrix as input.
 #' @param group, a character string. Two options: sudo or docker, depending to which group the user belongs
 #' @param scratch.folder, a character string indicating the path of the scratch folder
-#' @param file, a character string indicating the path of the file, with file name and extension included
+#' @param file, a character string indicating the full path + name with extension (.txt) of the expression matrix
+#' @param filtered_feature_bc_matrix, a character string indicating the full path of the Space Ranger output directory (10X published data).
+#'  The directory must be named 'filtered_feature_bc_matrix'
+#' @param lResolution, double for the resolution of Louvain algorithm
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
 #' @param percent, percentage of randomly selected cells removed in each permutation
-#' @param separator, separator used in count file, e.g. '\\t', ','
-#' @param logTen, 1 if the count matrix is already in log10, 0 otherwise
 #' @param pcaDimensions, 	0 for automatic selection of PC elbow.
 #' @param seed, important value to reproduce the same results with same input
-#' @param sparse, boolean for sparse matrix
-#' @param format, output file format csv or txt
 
 #' @author Luca Alessandri, alessandri [dot] luca1991 [at] gmail [dot] com, University of Torino
 #' @author Giovanni Motterle, giovanni [dot] motterle [at] studenti [dot] univr [dot] it, University of Verona
@@ -22,21 +21,21 @@
 #' @export
 
 STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder, 
-  file, nPerm, permAtTime, percent, separator, 
-  logTen=0, pcaDimensions=5, seed=1111, sparse=FALSE, format="NULL"){
+  file, filtered_feature_bc_matrix, lResolution=0.8, nPerm=80, permAtTime=8, percent=10,
+  pcaDimensions=5, seed=1111){
 
-  if(!sparse){
-  data.folder=dirname(file)
-  matrixNameC=strsplit(basename(file),"\\.")[[1]]
-  positions=length(matrixNameC)
-  matrixName=paste(matrixNameC[seq(1,positions-1)],collapse="")
-  format=strsplit(basename(basename(file)),"\\.")[[1]][positions]
-  }else{
-    matrixName=strsplit(dirname(file),"/")[[1]][length(strsplit(dirname(file),"/")[[1]])]
-    data.folder=paste(strsplit(dirname(file),"/")[[1]][-length(strsplit(dirname(file),"/")[[1]])],collapse="/")
-    if(format=="NULL"){
-      stop("Format output cannot be NULL for sparse matrix")
-    }
+  data.folder = normalizePath(dirname(file))
+  matrixName = strsplit(file,"/",fixed = TRUE)[[1]]
+  matrixName = matrixName[length(matrixName)]
+  matrixName = strsplit(matrixName,".",fixed = TRUE)[[1]][1]
+
+  lResolution = as.double(lResolution)
+  if(lResolution < 0 || lResolution > 5){
+    stop("Error: lResolution is not a double in [0,5]")
+  }
+
+  if (!file.exists(filtered_feature_bc_matrix)){
+    stop(cat(paste("\nIt seems that the ",filtered_feature_bc_matrix, " folder does not exist\n")))
   }
 
   #running time 1
@@ -63,8 +62,6 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
     return(10)
   }
 
-
-
   #check  if scratch folder exist
   if (!file.exists(scratch.folder)){
     cat(paste("\nIt seems that the ",scratch.folder, " folder does not exist\n"))
@@ -72,31 +69,29 @@ STLearnPermutation <- function(group=c("sudo","docker"), scratch.folder,
     setwd(data.folder)
     return(3)
   }
+
   tmp.folder <- gsub(":","-",gsub(" ","-",date()))
   scrat_tmp.folder=file.path(scratch.folder, tmp.folder)
   writeLines(scrat_tmp.folder,paste(data.folder,"/tempFolderID", sep=""))
   cat("\ncreating a folder in scratch folder\n")
   dir.create(file.path(scrat_tmp.folder))
+
   #preprocess matrix and copying files
-
-  if(separator=="\t"){
-    separator="tab"
-  }
-
   dir.create(paste(scrat_tmp.folder,"/",matrixName,sep=""))
   dir.create(paste(data.folder,"/Results",sep=""))
-  if(sparse==FALSE){
-    system(paste("cp ",data.folder,"/",matrixName,".",format," ",scrat_tmp.folder,"/",sep=""))
-  }else{
-    system(paste("cp -r ",data.folder,"/",matrixName,"/ ",scrat_tmp.folder,"/",sep=""))
-  }
+
+  system(paste("cp ",file," ",scrat_tmp.folder,"/",sep=""))
+  system(paste("cp -r ",filtered_feature_bc_matrix," ",scrat_tmp.folder,"/",sep=""))
+
+  filefile = strsplit(file,"/",fixed = TRUE)[[1]]
+  filefile = filefile[length(filefile)]
 
   #executing the docker job
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/stlearn-rcasc Rscript /home/main.R ",
-    matrixName," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
-    " ",logTen," ",pcaDimensions," ",seed," ",sparse,sep="")
+    filefile," ",lResolution," ",nPerm," ",permAtTime," ",percent," ",
+    pcaDimensions," ",seed," ",sep="")
 
   resultRun <- runDocker(group=group, params=params)
 
