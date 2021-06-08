@@ -11,7 +11,9 @@ spaGCNPermutation(
   spotpositions.name,
   image.name,
   use_histology = TRUE,
-  p,
+  lResolution = 0.8,
+  pcaDimensions = 10,
+  p = 0.5,
   nPerm = 80,
   permAtTime = 8,
   percent = 10,
@@ -30,6 +32,10 @@ spaGCNPermutation(
 \item{image.name, }{a character string indicating the full path + name with extension (.tif) of the tissue image}
 
 \item{use_histology, }{a boolean indicating if spaGCN should use the hisological information or not}
+
+\item{lResolution, }{double for the resolution of Louvain algorithm}
+
+\item{pcaDimensions, }{number of PCA dimension to keep}
 
 \item{p, }{a real number between 0 and representing the percentage of total expression contributed by neighborhoods}
 

@@ -8,6 +8,8 @@
 #' @param spotpositions.name, a character string indicating the full path + name with extension (.csv) of the spot positions
 #' @param image.name, a character string indicating the full path + name with extension (.tif) of the tissue image
 #' @param use_histology, a boolean indicating if spaGCN should use the hisological information or not
+#' @param lResolution, double for the resolution of Louvain algorithm
+#' @param pcaDimensions, number of PCA dimension to keep
 #' @param p, a real number between 0 and representing the percentage of total expression contributed by neighborhoods
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
@@ -20,13 +22,18 @@
 #' @export
 
 spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
-  h5matrix.name, spotpositions.name, image.name, use_histology=TRUE, p,nPerm=80, 
-  permAtTime=8, percent=10, seed=1111){
+  h5matrix.name, spotpositions.name, image.name, use_histology=TRUE, lResolution=0.8, 
+  pcaDimensions=10,p=0.5,nPerm=80, permAtTime=8, percent=10, seed=1111){
   
   data.folder = normalizePath(dirname(h5matrix.name))
   matrixName = strsplit(h5matrix.name,"/",fixed = TRUE)[[1]]
   matrixName = matrixName[length(matrixName)]
   matrixName = strsplit(matrixName,".",fixed = TRUE)[[1]][1]
+
+  lResolution = as.double(lResolution)
+  if(lResolution < 0 || lResolution > 5){
+    stop("Error: lResolution is not a double in [0,5]")
+  }
 
   p = as.double(p)
   if(p > 1 || p < 0){
@@ -90,8 +97,8 @@ spaGCNPermutation <- function(group=c("sudo","docker"), scratch.folder,
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/spagcnpermutation Rscript /home/main.R ",
-    h5matrixfile," ",spotpositionsfile," ",imagefile," ",use_histology," ",p," ",nPerm," ",permAtTime,
-    " ",percent," ",seed," ",sep="")
+    h5matrixfile," ",spotpositionsfile," ",imagefile," ",use_histology," ",lResolution," "
+    ,pcaDimensions," ",p," ",nPerm," ",permAtTime," ",percent," ",seed," ",sep="")
 
   resultRun <- runDocker(group=group, params=params)
 
