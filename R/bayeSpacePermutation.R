@@ -7,6 +7,7 @@
 #' @param file, a character string indicating the full path + name with extension (.txt) of the expression matrix
 #' @param filtered_feature_bc_matrix, a character string indicating the full path of the Space Ranger output directory (10X published data)
 #' @param n_clusters, an integer indicating how many clusters BayeSpace should search
+#' @param pcaDimensions, number of PCA dimension to keep
 #' @param spatial, a character string indicating the full path of the directory containing tissue images and positional data (10X published data)
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
@@ -19,7 +20,8 @@
 #' @export
 
 bayeSpacePermutation <- function(group=c("sudo","docker"), scratch.folder,
-  file, filtered_feature_bc_matrix,n_clusters, spatial, nPerm=80, permAtTime=8, percent=10, seed=1111){
+  file, filtered_feature_bc_matrix, n_clusters, pcaDimensions=10, spatial, 
+  nPerm=80, permAtTime=8, percent=10, seed=1111){
   
   data.folder = normalizePath(dirname(file))
   matrixName = strsplit(file,"/",fixed = TRUE)[[1]]
@@ -85,7 +87,8 @@ bayeSpacePermutation <- function(group=c("sudo","docker"), scratch.folder,
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/giovannics/bayespacepermutation Rscript /home/main.R ",
-    filefile," ",n_clusters," ",nPerm," ",permAtTime," ",percent," ",seed," ",sep="")
+    filefile," ",n_clusters," ",pcaDimensions," ",nPerm," ",permAtTime," ",
+    percent," ",seed," ",sep="")
 
   resultRun <- runDocker(group=group, params=params)
 

@@ -10,6 +10,7 @@ bayeSpacePermutation(
   file,
   filtered_feature_bc_matrix,
   n_clusters,
+  pcaDimensions = 10,
   spatial,
   nPerm = 80,
   permAtTime = 8,
@@ -27,6 +28,8 @@ bayeSpacePermutation(
 \item{filtered_feature_bc_matrix, }{a character string indicating the full path of the Space Ranger output directory (10X published data)}
 
 \item{n_clusters, }{an integer indicating how many clusters BayeSpace should search}
+
+\item{pcaDimensions, }{number of PCA dimension to keep}
 
 \item{spatial, }{a character string indicating the full path of the directory containing tissue images and positional data (10X published data)}
 
