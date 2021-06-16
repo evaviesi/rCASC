@@ -19,7 +19,7 @@
 #' @return To write
 #' @export
 
-bayeSpacePermutation <- function(group=c("sudo","docker"), scratch.folder,
+GiottoPermutation <- function(group=c("sudo","docker"), scratch.folder,
   file, h5matrix.name,spotpositions.name, n_clusters=10, pcaDimensions=10, 
   nPerm=80, permAtTime=8, percent=10, seed=1111){
   
