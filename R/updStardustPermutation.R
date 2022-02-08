@@ -15,7 +15,7 @@
 #' @param seed, important value to reproduce the same results with same input
 #' @param sparse, boolean for sparse matrix
 #' @param format, output file format csv or txt
-
+#'
 #' @author Luca Alessandri, alessandri [dot] luca1991 [at] gmail [dot] com, University of Torino
 #' @author Eva Viesi, eva [dot] viesi [at] univr [dot] it, University of Verona
 #' @author Simone Avesani, simone [dot] avesani [at] univr [dot] it, University of Verona
