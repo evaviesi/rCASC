@@ -1,6 +1,6 @@
 #' @title Updated Stardust Permutation
-#' @description This function executes a ubuntu docker that produces a specific number of permutation to evaluate clustering 
-#'  using an extended conf. of seurat (updated to 2020) that take into consideration physical position of spots.
+#' @description This function executes a ubuntu docker that produces a specific number of permutations to evaluate clustering 
+#'  using an extended version of seurat (updated to 2022) that take into consideration physical position of spots.
 #' @param group, a character string. Two options: sudo or docker, depending to which group the user belongs
 #' @param scratch.folder, a character string indicating the path of the scratch folder
 #' @param file, a character string indicating the path of the file, with file name and extension included
