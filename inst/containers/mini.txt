@@ -16,3 +16,4 @@ docker.io/repbioinfo/seuratanalysis
 docker.io/repbioinfo/seuratprior
 docker.io/repbioinfo/ribomitoumi
 docker.io/giovannics/spatial2020seuratpermutation
+docker.io/eviesi/permutationstardust22
