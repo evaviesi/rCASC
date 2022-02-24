@@ -9,6 +9,7 @@ updStardustPermutation(
   scratch.folder,
   file,
   tissuePosition,
+  method = 1,
   res = 0.8,
   nPerm,
   permAtTime,
@@ -29,6 +30,8 @@ updStardustPermutation(
 \item{file, }{a character string indicating the path of the file, with file name and extension included}
 
 \item{tissuePosition, }{file with tissue position name with extension}
+
+\item{method, }{method to be used to calculate the space weight (1,2,3)}
 
 \item{res, }{double resolution for louvain algorithm}
 
