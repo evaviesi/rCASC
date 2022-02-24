@@ -5,6 +5,7 @@
 #' @param scratch.folder, a character string indicating the path of the scratch folder
 #' @param file, a character string indicating the path of the file, with file name and extension included
 #' @param tissuePosition, file with tissue position name with extension
+#' @param method, method to be used to calculate the space weight (1,2,3)
 #' @param res, double resolution for louvain algorithm
 #' @param nPerm, number of permutations to perform the pValue to evaluate clustering
 #' @param permAtTime, number of permutations that can be computes in parallel
@@ -24,7 +25,7 @@
 #' @export
 
 updStardustPermutation <- function(group=c("sudo","docker"), scratch.folder, 
-  file, tissuePosition, res=0.8, nPerm, permAtTime, percent, separator, 
+  file, tissuePosition, method, res=0.8, nPerm, permAtTime, percent, separator, 
   logTen=0, pcaDimensions=5, seed=1111, sparse=FALSE, format="NULL"){
 
   if(!sparse){
@@ -107,7 +108,7 @@ updStardustPermutation <- function(group=c("sudo","docker"), scratch.folder,
   params <- paste("--cidfile ",data.folder,"/dockerID -v ",scrat_tmp.folder,
     ":/scratch -v ", data.folder, 
     ":/data -d docker.io/eviesi/permutationstardust22 Rscript /home/main.R ",
-    matrixName," ",tissuePositionFile," ",profileDistance," ",spotDistance," ",
+    matrixName," ",tissuePositionFile," ",profileDistance," ",spotDistance," ",method," ",
     res," ",nPerm," ",permAtTime," ",percent," ",format," ",separator,
     " ",logTen," ",pcaDimensions," ",seed," ",sparse,sep="")
 
