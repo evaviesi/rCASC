@@ -42,8 +42,13 @@ updStardustPermutation <- function(group=c("sudo","docker"), scratch.folder,
     }
   }
 
-  
   tissuePositionFile = basename(tissuePosition)
+  
+  # Check valid value for method
+  method = as.numeric(method)
+  if(method != 1 && method != 2 && method != 3) {
+    stop("Param method is not valid. Values are in (1,2,3)")
+  }
   #check valid value for resolution
   res = as.double(res)
   if(is.na(res) || res < 0 || res > 5){
